@@ -13,14 +13,14 @@ from rest_framework.permissions import AllowAny
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 class RegisterUserView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         data = request.data
-        password = data.get('password') #pas necessaire, donc django poeut s'en occuper
+        password = data.get('password')
 
         if not password:
             return Response({"error": "Le mot de passe est requis."}, status=status.HTTP_400_BAD_REQUEST)

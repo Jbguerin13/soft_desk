@@ -55,9 +55,9 @@ class CommentViewSet(ModelViewSet):
         issue_id = self.kwargs['issue_pk']
         project_id = self.kwargs['project_pk']
 
-        contributor = Contributor.objects.filter(user=self.request.user, project_id=project_id).exists()
-
-        if not contributor:
+        try:
+            contributor = Contributor.objects.get(user=self.request.user, project_id=project_id)
+        except Contributor.DoesNotExist:
             raise serializers.ValidationError("Vous devez être contributeur du projet pour commenter une issue.")
 
         serializer.save(issue_id=issue_id, author=contributor)
