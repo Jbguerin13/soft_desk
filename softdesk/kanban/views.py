@@ -26,9 +26,12 @@ class ProjectViewSet(ModelViewSet):
 
 
 class ContributorViewSet(ModelViewSet):
-    queryset = Contributor.objects.all()
     serializer_class = ContributorSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+
+    def get_queryset(self):
+        project_id = self.kwargs.get('project_pk')
+        return Contributor.objects.filter(project_id=project_id)
 
     def perform_create(self, serializer):
         serializer.save()
@@ -40,6 +43,8 @@ class IssueViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         project_id = self.kwargs['project_pk']
+        if not Contributor.objects.filter(user=self.request.user, project_id=project_id).exists():
+            raise serializers.ValidationError("Vous devez être contributeur du projet pour créer une issue.")
         serializer.save(project_id=project_id, author=self.request.user)
 
 class CommentViewSet(ModelViewSet):
