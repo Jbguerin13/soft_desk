@@ -13,7 +13,7 @@ from rest_framework.permissions import AllowAny
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 class RegisterUserView(APIView):
     permission_classes = [AllowAny]
@@ -36,4 +36,3 @@ class RegisterUserView(APIView):
         user.save()
 
         return Response({"message": "Utilisateur créé avec succès."}, status=status.HTTP_201_CREATED)
-

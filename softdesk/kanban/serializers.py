@@ -10,13 +10,14 @@ class ProjectSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_time']
 
 class ContributorSerializer(serializers.ModelSerializer):
+    project = serializers.ReadOnlyField(source='project.id')
+
     class Meta:
         model = Contributor
         fields = ['id', 'user', 'project', 'created_time']
-        read_only_fields = ['created_time']
+        read_only_fields = ['created_time', 'project']
         extra_kwargs = {
             'user': {'required': True},
-            'project': {'required': True},
         }
 
 class IssueSerializer(serializers.ModelSerializer):
