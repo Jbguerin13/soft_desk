@@ -11,11 +11,19 @@ from rest_framework.permissions import AllowAny
 
 
 class UserViewSet(ModelViewSet):
+    """
+    ViewSet for managing users.
+    Allows authenticated users to retrieve, update, and delete user accounts.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
 class RegisterUserView(APIView):
+    """
+    View for registering new users.
+    Allows unauthenticated users to create an account.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
