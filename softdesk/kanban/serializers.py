@@ -30,6 +30,12 @@ class IssueSerializer(serializers.ModelSerializer):
             'priority', 'tag', 'status', 'project', 'created_time'
         ]
         read_only_fields = ['author', 'created_time']
+    
+    def validate_assignee(self, value):
+        project_id = self.context['view'].kwargs['project_pk']
+        if not Contributor.objects.filter(user=value, project_id=project_id).exists():
+            raise serializers.ValidationError("L'utilisateur assigné doit être un contributeur du projet.")
+        return value
 
 class CommentSerializer(serializers.ModelSerializer):
     issue = serializers.ReadOnlyField(source='issue.id')

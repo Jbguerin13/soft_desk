@@ -20,10 +20,20 @@ class ProjectViewSet(ModelViewSet):
         return Project.objects.filter(
                 models.Q(author=self.request.user) | models.Q(contributors__user=self.request.user)
             ).distinct()
+
     def perform_create(self, serializer):
         project = serializer.save(author=self.request.user)
         serializer.save(author=self.request.user)
         Contributor.objects.create(user=self.request.user, project=project)
+    
+    def destroy(self, request, *args, **kwargs):
+        project = self.get_object()
+        project_id = project.id
+        self.perform_destroy(project)
+        return Response(
+            {"message": f"Le projet {project_id} a été correctement supprimé."},
+            status=status.HTTP_200_OK
+        )
 
 
 class ContributorViewSet(ModelViewSet):
@@ -43,7 +53,8 @@ class ContributorViewSet(ModelViewSet):
             raise serializers.ValidationError("Le projet spécifié n'existe pas.")
         
         serializer.save(project=project)
-        
+
+
 class IssueViewSet(ModelViewSet):
     serializer_class = IssueSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
@@ -57,7 +68,13 @@ class IssueViewSet(ModelViewSet):
         if not Contributor.objects.filter(user=self.request.user, project_id=project_id).exists():
             raise serializers.ValidationError("You must be a contributor of the project to create an issue.")
         serializer.save(project_id=project_id, author=self.request.user)
-        
+    
+    def perform_update(self, serializer):
+        project_id = self.kwargs['project_pk']
+        if not Contributor.objects.filter(user=self.request.user, project_id=project_id).exists():
+            raise serializers.ValidationError("You must be a contributor of the project to update an issue.")
+        serializer.save(project_id=project_id, author=self.request.user)
+                
     def destroy(self, request, *args, **kwargs):
         issue = self.get_object()
         issue_id = issue.id
