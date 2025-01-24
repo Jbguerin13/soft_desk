@@ -6,7 +6,7 @@ SoftDesk est une API RESTful permettant de gérer des projets, des tickets (issu
 
 ### Prérequis
 
-- Python 3.9 ou version ultérieure
+- Python 3.9 ou version supérieur
 - pip (gestionnaire de paquets Python)
 
 ### Étapes d'installation

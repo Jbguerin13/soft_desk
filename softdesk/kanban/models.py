@@ -4,16 +4,25 @@ import uuid
 
 
 class Contributor(models.Model):
+    """
+    Represents a contributor associated with a specific project.
+    Each contributor is linked to both a user and a project.
+    """
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contributions")
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name="contributors")
     created_time = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         unique_together = ('user', 'project')
-        
-        
+        # Ensures that a user cannot be linked to the same project multiple times.
+
+
 class Project(models.Model):
+    """
+    Represents a project within the application.
+    A project has a title, description, type, and is linked to an author (creator).
+    """
     id = models.AutoField(primary_key=True)
     TYPE_CHOICES = [
         ('BACKEND', 'Back-end'),
@@ -30,6 +39,10 @@ class Project(models.Model):
 
 
 class Issue(models.Model):
+    """
+    Represents an issue (task, bug, or feature request) within a project.
+    An issue is associated with a project and has an author and optional assignee.
+    """
     id = models.AutoField(primary_key=True)
     PRIORITY_CHOICES = [
         ('LOW', 'Low'),
@@ -52,7 +65,7 @@ class Issue(models.Model):
     description = models.TextField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="issues")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_issues")
-    assignee = models.ForeignKey(User,on_delete=models.SET_NULL, null=True,blank=True, related_name="assigned_issues")
+    assignee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned_issues")
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='LOW')
     tag = models.CharField(max_length=10, choices=TAG_CHOICES, default='TASK')
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='TODO')
@@ -60,6 +73,10 @@ class Issue(models.Model):
 
 
 class Comment(models.Model):
+    """
+    Represents a comment linked to an issue.
+    Comments are created by contributors of the associated project.
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.TextField()
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="comments")
