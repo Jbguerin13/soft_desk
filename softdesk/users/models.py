@@ -12,5 +12,5 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         if self.age and self.age < 15:
-            raise ValueError("Les utilisateurs de moins de 15 ans ne peuvent pas s'inscrire.")
+            raise ValueError("Users less than 15 years old can't subscribe.")
         super().save(*args, **kwargs)
